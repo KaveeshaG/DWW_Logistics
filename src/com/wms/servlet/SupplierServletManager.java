@@ -1,0 +1,71 @@
+package com.wms.servlet;
+
+import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.wms.model.SupplierAcount;
+import com.wms.service.IInventoryManager;
+import com.wms.service.InventoryManagerServices;
+import com.wms.service.Supplier;
+import com.wms.service.SupplierServices;
+
+/**
+ * Servlet implementation class SupplierServletManager
+ */
+@WebServlet("/SupplierServletManager")
+public class SupplierServletManager extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public SupplierServletManager() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+		
+		String action = request.getParameter("action");
+		
+		if(action.equals("USA")) {
+			
+			
+			String supplierId = request.getParameter("supplierID");
+			
+			request.setAttribute("supID", supplierId);
+			RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/WEB-INF/views/InventoryManager/UpdateSupplierAccount.jsp");
+			dispatcher.forward(request, response);
+		}
+		
+		if(action.equals("EDITPRO")) {
+			
+			
+			String productID = request.getParameter("proID");
+			
+			request.setAttribute("proID", productID);
+			RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/WEB-INF/views/Supplier/UpdateProduct.jsp");
+			dispatcher.forward(request, response);
+		}
+	}
+
+}

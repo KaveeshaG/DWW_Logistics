@@ -1,0 +1,1298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Querys>
+
+	<!-- Create table Customer Query -->
+	<query id="create_customer_table">
+        <![CDATA[
+			CREATE TABLE customer(
+				CustomerId VARCHAR(10) NOT NULL PRIMARY KEY,
+			    CusName VARCHAR(75) NOT NULL,
+			    Address VARCHAR(100) NOT NULL,
+			    Email VARCHAR(45) NOT NULL,
+			    MobileNo VARCHAR(10) NOT NULL,
+			    PayMethod TINYINT NOT NULL,
+			    CusRef VARCHAR(20) NOT NULL
+			);
+        ]]>
+	</query>
+	
+	<!-- Create table GRN Query -->
+	<query id="create_GRN_table">
+        <![CDATA[
+			CREATE TABLE grn(
+				GRNNo VARCHAR(20) NOT NULL PRIMARY KEY,
+			    VehicleNo VARCHAR(20) NOT NULL,
+			    ContainerNo VARCHAR(20) NOT NULL,
+			    TrailerNo VARCHAR(20) NOT NULL,
+			    Date DATE NOT NULL,
+			    STime VARCHAR(20) NOT NULL,
+			    ETime VARCHAR(20) NOT NULL,
+			    CusId VARCHAR(10) NOT NULL,
+			    FOREIGN KEY (CusId) REFERENCES customer(CustomerId) ON DELETE CASCADE ON UPDATE CASCADE
+			);
+        ]]>
+	</query>
+	
+	<!-- Create table GRN_QTY Query -->
+	<query id="create_GRN_Qty_table">
+        <![CDATA[
+			CREATE TABLE grn_qty(
+				id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+			    GRNNo VARCHAR(20) NOT NULL,
+			    ItemId VARCHAR(10) NOT NULL,
+			    Qty FLOAT NOT NULL,
+			    SeqFeet INT NOT NULL,
+			    CBM INT NOT NULL,
+			    WLocId VARCHAR(5) NOT NULL,
+			    DamageQty FLOAT NOT NULL,
+			    Status VARCHAR(45) NOT NULL,
+			    Remark VARCHAR(100) NOT NULL,
+			    FOREIGN KEY (GRNNo) REFERENCES grn(GRNNo) ON DELETE CASCADE ON UPDATE CASCADE,
+			    FOREIGN KEY (ItemId) REFERENCES item(itemId) ON DELETE CASCADE ON UPDATE CASCADE
+			);
+        ]]>
+	</query>
+	
+	<!-- Create table Item Query -->
+	<query id="create_item_table">
+        <![CDATA[
+			CREATE TABLE item(
+				itemId VARCHAR(10) NOT NULL PRIMARY KEY,
+			    itemName VARCHAR(50) NOT NULL,
+			    itemDescription VARCHAR(80) NOT NULL,
+			    remark VARCHAR(80) NOT NULL,
+			    paymentMethod INT NOT NULL DEFAULT -1,
+			    price FLOAT NOT NULL DEFAULT -1,
+			    uom VARCHAR(45) NOT NULL DEFAULT 'None'
+			);
+        ]]>
+	</query>
+	
+	<!-- Create table gdn Query -->
+	<query id="create_gdn_table">
+        <![CDATA[
+			CREATE TABLE gdn(
+				GDNNo VARCHAR(20) NOT NULL PRIMARY KEY,
+			    VehicleNo VARCHAR(20) NOT NULL,
+			    ContainerNo VARCHAR(20) NOT NULL,
+			    Date DATE NOT NULL,
+			    STime VARCHAR(20) NOT NULL,
+			    ETime VARCHAR(20) NOT NULL,
+			    CusId VARCHAR(10) NOT NULL,
+			    FOREIGN KEY (CusId) REFERENCES customer(CustomerId) ON DELETE CASCADE ON UPDATE CASCADE
+			);
+        ]]>
+	</query>
+	
+	<!-- Create table gdn qty Query -->
+	<query id="create_gdn_qty_table">
+        <![CDATA[
+			CREATE TABLE gdn_qty(
+				id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+			    GDNNo VARCHAR(20) NOT NULL,
+			    GRNNo VARCHAR(20) NOT NULL,
+			    itemId VARCHAR(10) NOT NULL,
+			    Qty FLOAT NOT NULL,
+			    SeqFeet INT NOT NULL,
+			    CBM INT NOT NULL,
+			    Remark VARCHAR(100) NOT NULL,
+			    FOREIGN KEY (GDNNo) REFERENCES gdn(GDNNo) ON DELETE CASCADE ON UPDATE CASCADE,
+			    FOREIGN KEY (GRNNo) REFERENCES grn(GRNNo) ON DELETE CASCADE ON UPDATE CASCADE,
+			    FOREIGN KEY (itemId) REFERENCES item(itemId) ON DELETE CASCADE ON UPDATE CASCADE
+			);
+        ]]>
+	</query>
+	
+	<!-- Create table GRN DELETE REQUEST Query -->
+	<query id="create_grn_delete_req">
+        <![CDATA[
+			CREATE TABLE grn_delete_req(
+				id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+				cusName varchar(75) NOT NULL,
+			    GRNNo VARCHAR(20) NOT NULL,
+			    reason VARCHAR(100) NOT NULL,
+			    FOREIGN KEY (GRNNo) REFERENCES grn(GRNNo) ON DELETE CASCADE ON UPDATE CASCADE
+			);
+        ]]>
+	</query>
+	
+	<!-- Create table ITEM DELETE REQUEST Query -->
+	<query id="create_item_delete_req">
+        <![CDATA[
+			CREATE TABLE item_delete_req(
+				id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+			    itemId VARCHAR(10) NOT NULL,
+			    reason VARCHAR(100) NOT NULL,
+			    FOREIGN KEY (itemId) REFERENCES item(itemId) ON DELETE CASCADE ON UPDATE CASCADE
+			)
+        ]]>
+	</query>
+	
+	<!-- Create table GDN DELETE REQUEST Query -->
+	<query id="create_gdn_delete_req">
+        <![CDATA[
+			CREATE TABLE gdn_delete_req(
+				id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+				cusName varchar(75) NOT NULL,
+			    GDNNo VARCHAR(20) NOT NULL,
+			    reason VARCHAR(100) NOT NULL,
+			    FOREIGN KEY (GDNNo) REFERENCES gdn(GDNNo) ON DELETE CASCADE ON UPDATE CASCADE
+			)
+        ]]>
+	</query>
+	
+	<!-- DROP TABLES -->
+	<query id="drop_table_function">
+         <![CDATA[        
+			    CREATE PROCEDURE dropTable()
+			    BEGIN
+			        DROP TABLE IF EXISTS customer;
+			        DROP TABLE IF EXISTS grn;
+			        DROP TABLE IF EXISTS grn_qty;
+			    END
+        ]]>
+	</query>
+	
+	<!-- DROP TABLES -->
+	<query id="drop_table">
+         <![CDATA[        
+			CALL dropTable
+        ]]>
+	</query>
+	
+	<!-- INSERT GRN QUERY -->
+	<query id="insert_GRN">
+        <![CDATA[
+          	insert into grn values (?, ?, ?, ?, ?, ?, ?, ?)
+        ]]>
+	</query>
+	
+	<!-- INSERT GRN_QTY QUERY -->
+	<query id="insert_GRN_QTY">
+        <![CDATA[
+          	insert into grn_qty values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ]]>
+	</query>
+	
+	<!-- Select a particular GRN by id Query -->
+	<query id="GRN_by_id">
+         <![CDATA[        
+            select * from grn where GRNNo = ?
+        ]]>
+	</query>
+
+	
+	<!-- Select all GRN For Table-->
+	<query id="all_GRNS">
+         <![CDATA[        
+           select * from grn
+        ]]>
+	</query>
+	
+	<!-- Get Customer Name -->
+	<query id="get_Customer_Name">
+         <![CDATA[        
+            select CusName from customer where CustomerId = ?
+        ]]>
+	</query>
+	
+	<!-- Get Customer REFCODE -->
+	<query id="get_Customer_REF">
+         <![CDATA[        
+            select CusRef from customer where CustomerId = ?
+        ]]>
+	</query>
+	
+	<!-- Get Customer Name List-->
+	<query id="get_Customer_Name_List">
+         <![CDATA[        
+            select CustomerId,CusName from customer
+        ]]>
+	</query>
+	
+	<!-- GRN QTY view -->
+	<query id="get_GRN_View">
+         <![CDATA[        
+            select ItemId,Qty,SeqFeet,CBM,WLocId,DamageQty,Status,Remark from grn_qty where GRNNo = ?
+        ]]>
+	</query>
+	
+	<!-- GET GRN count -->
+	<query id="GRN_COUNT_BY_ID">
+         <![CDATA[        
+            select count(GRNNo) as count from grn where cusId = ?
+        ]]>
+	</query>
+	
+	<!-- Update a particular GRN by GRNNo Query -->
+	<query id="update_GRN">
+         <![CDATA[        
+			update grn as g
+			set g.VehicleNo = ? , g.ContainerNo = ? , g.TrailerNo = ?
+			where g.GRNNo = ?;
+        ]]>
+	</query>
+	
+	<!-- request delete a particular GRN -->
+	<query id="request_delete_GRN">
+         <![CDATA[        
+			insert into grn_delete_req(cusName,GRNNo,reason) values(?,?,?)
+        ]]>
+	</query>
+	
+	<!-- request get a particular GRN -->
+	<query id="get_GRN_By_cusId">
+         <![CDATA[        
+			select * from grn where CusId = ?
+        ]]>
+	</query>
+	
+	<!-- request get a particular GRNQTY -->
+	<query id="get_GRN_By_ItemIdAndCusId">
+         <![CDATA[        
+			select Qty,SeqFeet,CBM,WLocId,Remark from grn_qty where GRNNo = ? and ItemId = ?
+        ]]>
+	</query>
+	
+	<!-- Show DELETE REQ GRN Query -->
+	<query id="show_request_delete_grn">
+         <![CDATA[        
+			select * from grn_delete_req
+        ]]>
+	</query>
+	
+	<!-- DELETE GRN REQ Query -->
+	<query id="delete_grn_del_req">
+         <![CDATA[        
+			delete from grn_delete_req where GRNNo = ?
+        ]]>
+	</query>
+	
+	<!-- DELETE GRN Query -->
+	<query id="delete_grn">
+         <![CDATA[        
+			delete from grn where GRNNo = ?
+        ]]>
+	</query>
+	
+	<!-- INSERT GET ITEM CODE QUERY -->
+	<query id="get_Item_Code">
+        <![CDATA[
+          	select count(itemId) as count from item
+        ]]>
+	</query>
+	
+	<!-- INSERT ITEM QUERY -->
+	<query id="insert_ITEM">
+        <![CDATA[
+          	insert into item(itemId,itemName,itemDescription,remark) values(?, ?, ?, ?)
+        ]]>
+	</query>
+	
+	<!-- GET ITEM NAME QUERY -->
+	<query id="GET_ITEM_NAME">
+        <![CDATA[
+          	select itemName from item where itemId = ?
+        ]]>
+	</query>
+	
+	<!-- GET ITEM LIST QUERY -->
+	<query id="GET_ITEM_LIST">
+        <![CDATA[
+          	select * from item
+        ]]>
+	</query>
+	
+	<!-- GET ITEM UPDATE QUERY -->
+	<query id="GET_ITEM_UPDATE">
+        <![CDATA[
+			update item as i
+			set i.itemName = ? , i.itemDescription = ? , i.remark = ?
+			where i.itemId = ?
+        ]]>
+	</query>
+	
+	<!-- GET ITEM By ID QUERY -->
+	<query id="GET_ITEM_BY_ID">
+        <![CDATA[
+			select * from item where itemId = ?
+        ]]>
+	</query>
+	
+	<!-- request delete a particular ITEM -->
+	<query id="request_delete_ITEM">
+         <![CDATA[        
+			insert into item_delete_req(itemId,reason) values(?,?)
+        ]]>
+	</query>
+	
+	<!-- Update ITEM By ID -->
+	<query id="Confirm_item">
+        <![CDATA[
+			update item as i
+			set i.itemName = ?, i.itemDescription = ?, i.remark = ?, paymentMethod = ?, price = ?, uom = ?
+			where i.itemId = ?
+        ]]>
+	</query>
+	
+	<!-- GET GDN count -->
+	<query id="GDN_COUNT_BY_ID">
+         <![CDATA[        
+            select count(GDNNo) as count from gdn where cusId = ?
+        ]]>
+	</query>
+	
+	<!-- INSERT GDN -->
+	<query id="insert_GDN">
+         <![CDATA[        
+            insert into gdn values(?, ?, ?, ?, ?, ?, ?)
+        ]]>
+	</query>
+	
+	<!-- INSERT GDN QTY -->
+	<query id="insert_GDN_QTY">
+         <![CDATA[        
+            insert into gdn_qty(GDNNo,GRNNo,itemId,Qty,SeqFeet,CBM,Remark) values(?,?,?,?,?,?,?);
+        ]]>
+	</query>
+	
+	<!-- Select all GDN For Table-->
+	<query id="all_GDNS">
+         <![CDATA[        
+           select * from gdn
+        ]]>
+	</query>
+	
+	<!-- Select GDN by GDNNo For Table-->
+	<query id="get_GDNQTY_BY_GDNNO">
+         <![CDATA[        
+           select * from gdn_qty where GDNNo = ?
+        ]]>
+	</query>
+	
+	<!-- Update a particular GDN by GDNNo Query -->
+	<query id="update_GDN">
+         <![CDATA[        
+			update gdn as g
+			set g.VehicleNo = ? , g.ContainerNo = ?
+			where g.GDNNo = ?;
+        ]]>
+	</query>
+	
+	<!-- GET GDN BY GDNNO Query -->
+	<query id="get_GDN_BYID">
+         <![CDATA[        
+			select * from gdn where GDNNo = ?;
+        ]]>
+	</query>
+	
+	<!-- DELETE REQ GDN Query -->
+	<query id="request_delete_gdn">
+         <![CDATA[        
+			insert into gdn_delete_req(cusName,GDNNo,reason) values(?, ?, ?)
+        ]]>
+	</query>
+	
+	<!-- Show DELETE REQ GDN Query -->
+	<query id="show_request_delete_gdn">
+         <![CDATA[        
+			select * from gdn_delete_req
+        ]]>
+	</query>
+	
+	<!-- DELETE GDN REQ Query -->
+	<query id="delete_gdn_del_req">
+         <![CDATA[        
+			delete from gdn_delete_req where GDNNo = ?
+        ]]>
+	</query>
+	
+	<!-- DELETE GDN Query -->
+	<query id="delete_gdn">
+         <![CDATA[        
+			delete from gdn where GDNNo = ?
+        ]]>
+	</query>
+	
+	
+	<!-- /** * @Student_ID : IT18178678 * @Name : S.M.A.S.Senevirathne */ -->
+
+
+<query id="get_inventory_table_entry_count">
+         <![CDATA[        
+            select * from Inventory;
+        ]]>
+</query>
+
+<query id="get_inventory_items_by_type">
+         <![CDATA[        
+            select * from Inventory
+             where itemType = ?;
+        ]]>
+</query>
+
+<query id="add_inventory_table">
+         <![CDATA[        
+            insert into Inventory(itemNo, itemName, itemDescription, warrenty, addedDate, location, itemStatus, owner, itemType ) 
+            values(?,?,?,?,?,?,?,?,?);
+        ]]>
+</query>
+
+<query id="delete_all_items">
+         <![CDATA[        
+            delete from Inventory
+            where itemType = ?;
+        ]]>
+</query>
+
+<query id="delete_item_by_id">
+         <![CDATA[        
+           delete from Inventory where itemNo = ?;
+        ]]>
+</query>
+
+<query id="get_total_days">
+         <![CDATA[        
+          {call ToalDay(?,?)}
+        ]]>
+</query>
+
+<query id="get_remaing_days">
+         <![CDATA[        
+          {call GetRemaingDays(?,?)}
+        ]]>
+</query>
+
+<query id="update_inventory_item">
+         <![CDATA[        
+          update Inventory
+		  set  itemName = ?, itemDescription = ?, warrenty = ?, addedDate = ?, location = ?, itemStatus = ?, owner = ?  
+		  where itemNo = ?;
+        ]]>
+</query>
+
+<query id="get_purchase_order_table_entry_count">
+         <![CDATA[        
+          select * from PurchaseOrder;
+        ]]>
+</query>
+
+<query id="add_purchase_order_table">
+         <![CDATA[        
+          insert into PurchaseOrder(poId, poDay, description) values (?,?,?);
+        ]]>
+</query>
+
+<query id="get_purchase_order_details_table">
+         <![CDATA[        
+          select * from PurchaseOrderDetails
+          where poId = ?;
+        ]]>
+</query>
+
+<query id="get_purchase_order_details_table_entry_count">
+         <![CDATA[        
+          select * from PurchaseOrderDetails;
+        ]]>
+</query>
+
+
+<query id="add_purchase_order_details_table">
+         <![CDATA[        
+          insert into PurchaseOrderDetails(poDeId , poId , itemName , qty, requestPrice ) values(?,?,?,?,?)
+        ]]>
+</query>
+
+<query id="get_purchase_order_head">
+         <![CDATA[        
+          select * from PurchaseOrder where poId = ?;
+        ]]>
+</query>
+
+<query id="delete_purchase_order_details_by_id">
+         <![CDATA[        
+          delete from PurchaseOrderDetails
+          where poDeId = ?;
+        ]]>
+</query>
+
+<query id="edit_purchase_order_details_by_id">
+         <![CDATA[        
+    	  update PurchaseOrderDetails
+		  set  itemName = ?, qty = ?, requestPrice = ?
+		  where poDeId = ?;
+        ]]>
+</query>
+
+<query id="delete_purchase_order_details_by_po_id">
+         <![CDATA[        
+          delete from PurchaseOrderDetails
+          where poId = ?;
+        ]]>
+</query>
+
+
+
+<query id="delete_purchase_order">
+         <![CDATA[        
+          delete from PurchaseOrder
+          where poId = ?;
+        ]]>
+</query>
+
+<query id="get_inventory_item_details_by_id">
+         <![CDATA[        
+          select * from Inventory
+          where itemNo = ?;
+        ]]>
+</query>
+
+<query id="get_quotation_table_entry_count">
+         <![CDATA[        
+          select * from Quotation;
+          
+        ]]>
+</query>
+
+<query id="add_quotation_table">
+         <![CDATA[        
+          insert into Quotation(quotationID,poId,supplierName,contact,email,addLine1,addLine2,discount) values(?,?,?,?,?,?,?,?);
+        ]]>
+</query>
+
+<query id="get_quotation_details_table_entry_count">
+         <![CDATA[        
+          select * from QuotationDetails;
+        ]]>
+</query>
+
+<query id="add_quotation_details_table">
+         <![CDATA[        
+          insert into QuotationDetails(quotationDeatailsID,quotationID,poDeId,price,des) values(?,?,?,?,?);
+        ]]>
+</query>
+
+<query id="get_quotation_by_po_id">
+         <![CDATA[        
+          select * from Quotation where poId = ?; 
+        ]]>
+</query>
+
+<query id="get_quotation_details_by_qo_id">
+         <![CDATA[        
+		  select * 
+     	  from PurchaseOrderDetails pod, QuotationDetails qod
+     	  where pod.poDeId = qod.poDeId and quotationID = ?;
+        ]]>
+</query>
+
+<query id="get_quotation_by_quoatation_id">
+         <![CDATA[        
+          select * from Quotation where quotationID = ?; 
+        ]]>
+</query>
+
+<query id="crete_inventory_table">
+         <![CDATA[        
+         create table Inventory(
+			itemNo varchar(20),
+    		itemName varchar(100),
+    		itemDescription varchar(200),
+    		warrenty date,
+    		addedDate date,
+    		location varchar(50),
+    		itemStatus varchar(20) default "Unallocate",
+    		owner varchar(20),
+    		itemType varchar(10) check ('Refil' or "Replace"),
+   			constraint INPK primary key (itemNo)
+		);
+        ]]>
+</query>
+
+
+<query id="drop_inventory_table">
+         <![CDATA[        
+			DROP TABLE IF EXISTS Inventory;
+        ]]>
+</query>
+
+<query id="crete_purchase_order_table">
+         <![CDATA[        
+			create table PurchaseOrder(
+				poId varchar(20),
+    			poDay date,
+				status varchar(30) default 'NEW',
+    			description varchar(200),
+    			constraint POPK primary key (poId)
+			);
+        ]]>
+</query>
+
+<query id="crete_purchase_order_details_table">
+         <![CDATA[        
+			create table PurchaseOrderDetails(
+				poDeId varchar(20),
+    			poId varchar(20),
+				itemName varchar(100),
+    			qty integer,
+				requestPrice real,
+				constraint PODPK primary key (poDeId),
+    			constraint PODFK foreign key (poId) references PurchaseOrder(poId)
+			);
+        ]]>
+</query>
+
+<query id="crete_quotatin_table">
+         <![CDATA[        
+			create table Quotation(
+				quotationID varchar(20),
+    			poId varchar(20),
+    			supplierName varchar(200),
+   				contact varchar(12),
+   				email varchar(100),
+   				addLine1 varchar(100),
+   				addLine2 varchar(100),
+    			discount real,
+    			total real,
+    			constraint QPK primary key (quotationID),
+    			constraint QFK foreign key(poId) references PurchaseOrder(poId)
+    		);
+        ]]>
+</query>
+
+
+<query id="crete_quotatin_details_table">
+         <![CDATA[        
+			create table QuotationDetails(
+				quotationDeatailsID varchar(20),
+   				quotationID varchar(20),
+    			poDeId varchar(20),
+    			price real,
+    			des varchar(100),
+    			constraint QDPK primary key (quotationDeatailsID),
+    			constraint QDFK foreign key(quotationID) references Quotation(quotationID),
+    			constraint PODEFK foreign key(poDeId) references PurchaseOrderDetails(poDeId)
+    		);
+        ]]>
+</query>
+
+<query id="drop_purchase_order_table">
+         <![CDATA[        
+			DROP TABLE IF EXISTS PurchaseOrder;
+    		
+        ]]>
+</query>
+
+<query id="drop_purchase_order_details_table">
+         <![CDATA[        
+			DROP TABLE IF EXISTS PurchaseOrderDetails;
+    		
+        ]]>
+</query>
+
+<query id="drop_quotatin_table">
+         <![CDATA[        
+			DROP TABLE IF EXISTS Quotation;
+    		
+        ]]>
+</query>
+
+<query id="drop_quotatin_details_table">
+         <![CDATA[        
+			DROP TABLE IF EXISTS QuotationDetails;
+    		
+        ]]>
+</query>
+
+<query id="create_procedure_totaldays">
+         <![CDATA[        
+			 
+				CREATE PROCEDURE ToalDay(IN IItemNO VARCHAR(20), OUT totalDays INT)
+				BEGIN
+   				 select DATEDIFF(warrenty, addedDate) into totalDays from Inventory where itemNo = IItemNO;
+				END
+    		
+        ]]>
+</query>
+
+<query id="create_procedure_get_remaing_days">
+         <![CDATA[        
+		
+				CREATE PROCEDURE GetRemaingDays(IN IItemNumber VARCHAR(20), OUT remainDays INT)
+				BEGIN
+    				select DATEDIFF(warrenty, CURDATE()) into remainDays from Inventory where itemNo = IItemNumber;
+				END
+    		
+        ]]>
+</query>
+
+
+<query id="drop_procedure_totaldays">
+         <![CDATA[        
+			DROP PROCEDURE IF EXISTS ToalDay;
+    		
+        ]]>
+</query>
+
+<query id="drop_procedure_get_remaing_days">
+         <![CDATA[        
+			DROP PROCEDURE IF EXISTS GetRemaingDays;
+    		
+        ]]>
+</query>
+
+<query id="drop_all_po1">
+         <![CDATA[        
+			delete from QuotationDetails;
+    		
+    		
+        ]]>
+</query>
+
+<query id="drop_all_po2">
+         <![CDATA[        
+			
+    		delete from Quotation;
+    		
+    		
+        ]]>
+</query>
+
+<query id="drop_all_po3">
+         <![CDATA[        
+			
+    		delete from PurchaseOrderDetails;
+    		
+        ]]>
+</query>
+
+<query id="drop_all_po4">
+         <![CDATA[        
+     		delete from PurchaseOrder;
+    		
+        ]]>
+</query>
+
+<query id="delete_quotation_by_id">
+         <![CDATA[        
+     		delete from Quotation
+     		where quotationID = ?;
+    		
+        ]]>
+</query>
+
+<query id="delete_quotation_details_by_id">
+         <![CDATA[        
+     		delete from QuotationDetails
+     		where quotationID = ?;
+    		
+        ]]>
+</query>
+
+
+<query id="update_purchase_order_status">
+         <![CDATA[        
+     		update PurchaseOrder
+     		set status = ?
+          	where poId = ?;
+    		
+        ]]>
+</query>
+
+<query id="get_quotation_count">
+         <![CDATA[        
+     		select count(*)
+     		from Quotation
+     		where poID = ?
+     		group by poID
+     
+    		
+        ]]>
+</query>
+
+<query id="update_quotation_status">
+         <![CDATA[        
+     		update Quotation
+     		set status = ?
+          	where quotationID = ?;
+     
+    		
+        ]]>
+</query>
+
+<query id="get_qutation_by_id_and_status">
+         <![CDATA[        
+     		select * from Quotation
+     		where status = ? and poID = ?;
+     
+    		
+        ]]>
+</query>
+
+<query id="add_im_notifications">
+         <![CDATA[        
+     		insert into InventoryManagerNotificatios(description, owner, dataID, remaining, type) values (?,?,?,?,?);
+     	]]>
+</query>
+
+<query id="select_all_notifications_of_owner">
+         <![CDATA[        
+     		select * from InventoryManagerNotificatios
+     		where owner = ?
+     		order by dateCreated desc;
+     	]]>
+</query>
+
+<query id="get_count_of_im_nitifications">
+         <![CDATA[        
+     		select count(*)
+   			from InventoryManagerNotificatios
+    		where seenState = 'Unseen' and owner = ?;
+     	]]>
+</query>
+
+<query id="update_im_notification_status">
+         <![CDATA[ 
+         update InventoryManagerNotificatios
+         set seenState = 'Seen'
+         where id = ?;  
+     	]]>
+</query>
+
+
+
+
+
+<!-- /** * @Student_ID : IT18180626 * @Name : H.M.A.N.Welagedara */ -->
+
+
+<query id="get_Supplier_product_table_entry_count">
+         <![CDATA[        
+            select * from SupplierProduct;
+        ]]>
+</query>
+
+<query id="add_Supplier_product_table">
+         <![CDATA[        
+    
+            INSERT INTO SupplierProduct(supplierId,productId,productName,qty,proPrice,warranty,descrption,imageName)
+			VALUES(?,?,?,?,?,?,?,?);
+        ]]>
+</query>
+
+<query id="delete_all_supplier_products">
+         <![CDATA[        
+            delete from SupplierProduct where supplierId = ?;
+            
+        ]]>
+</query>
+
+<query id="get_supplier_products">
+         <![CDATA[        
+            select * from SupplierProduct where supplierId = ?;
+            
+        ]]>
+</query>
+
+<query id="get_all_suppliers_products">
+         <![CDATA[        
+            select * from SupplierProduct where qty > 0;
+            
+        ]]>
+</query>
+
+<query id="get_supplier_product_by_id">
+         <![CDATA[        
+            delete from SupplierProduct
+            where productId = ?;
+            
+        ]]>
+</query>
+
+
+<query id="get_Supplier_Account_table_entry_count">
+         <![CDATA[        
+            select * from SupplierAccount;
+        ]]>
+</query>
+
+
+
+
+
+<query id="add_Suppliers_table">
+         <![CDATA[        
+    
+            INSERT INTO SupplierAccount(supplierId,userName,password,name,address,email,contactNo,review)
+			VALUES(?,?,?,?,?,?,?,?);
+        ]]>
+</query>
+
+<query id="get_Suppliers_table_to_view">
+         <![CDATA[        
+            select * from SupplierAccount;
+            
+        ]]>
+</query>
+
+<query id="delete_all_supplier_table">
+         <![CDATA[        
+            delete from SupplierAccount;
+            
+        ]]>
+</query>
+
+
+<query id="get_supplier_account_by_id">
+         <![CDATA[        
+            delete from SupplierAccount
+            where supplierId = ?;
+            
+        ]]>
+</query>
+
+<query id="update_supplier_account">
+         <![CDATA[        
+          update SupplierAccount
+		  set userName= ?,password = ?,name = ?,address = ?,email = ?,contactNo = ?,review = ?
+		  where supplierId = ?;
+        ]]>
+</query>
+
+
+<query id="get_supplier_details_by_ID">
+         <![CDATA[        
+         select * from SupplierAccount where supplierId = ?;
+        ]]>
+</query>
+
+<query id="get_product_by_ID">
+         <![CDATA[        
+         select * from SupplierProduct where productId = ?;
+        ]]>
+</query>
+
+<query id="update_product_by_ID">
+         <![CDATA[   
+         update SupplierProduct
+         set productName = ?, qty = ?, warranty = ?, descrption = ?, imageName = ?
+         where productId = ? ;
+         
+        ]]>
+</query>
+
+<query id="create_supplier_account">
+         <![CDATA[   
+        create table SupplierAccount(
+			supplierId varchar(50) not null primary key,
+    		name varchar(50),
+    		userName varchar(50),
+    		password varchar(50),
+    		address varchar(100),
+    		email varchar(100),
+    		contactNo varchar(20),
+    		review varchar(200)
+    
+		);
+        ]]>
+</query>
+
+<query id="create_supplier_product">
+         <![CDATA[   
+       		create table SupplierProduct(
+				supplierId varchar(50),
+				productId varchar(50) not null primary key,
+    			productName varchar(50),
+    			qty int,
+    			proPrice real,
+    			warranty varchar(50),
+    			descrption varchar(100),
+				imageName varchar(100),
+				constraint fk_SupplierProduct foreign key (supplierId) references SupplierAccount(supplierId)
+			);
+        ]]>
+</query>
+
+<query id="drop_supplier_product">
+         <![CDATA[   
+       		DROP TABLE IF EXISTS SupplierProduct;
+        ]]>
+</query>
+
+<query id="drop_supplier_account">
+         <![CDATA[   
+       		DROP TABLE IF EXISTS SupplierAccount;
+        ]]>
+</query>
+	
+			
+		<!-- Location Function -->
+		
+			<!-- Create table Location Transacton Query -->
+	<query id="create_loc_tran_table">
+        <![CDATA[
+				CREATE TABLE location_transfer(
+					ID int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	  				CurrentLoc varchar(3) NOT NULL,
+	  				customerId varchar(10),
+	  				GRNNo varchar(20),
+	  				DestinationLoc varchar(3) NOT NULL,
+	  				Reason varchar(100) NOT NULL,
+	  				Status tinyint(4) NOT NULL DEFAULT '0'
+  				)
+        ]]>
+	</query>
+	
+	<!-- DROP TABLES -->
+	<query id="drop_table">
+         <![CDATA[        
+            DROP TABLE IF EXISTS location_transfer
+        ]]>
+	</query>
+	
+
+	<!-- Add transaction to admin -->
+	<query id="location_transaction_req">
+        <![CDATA[
+          	insert into location_transfer (CurrentLoc, customerId, GRNNo, DestinationLoc, Reason, Status) 
+          	values (?, ?, ?, ?, ?, ?)
+        ]]>
+	</query>
+	
+	
+	<!-- Get Location Transacton IDs Query -->
+	<query id="loc_tran_ids">
+         <![CDATA[        
+            select lt.ID from location_transfer as lt
+        ]]>
+	</query>
+	
+	
+	<!-- Select a particular location Transaction by id Query -->
+	<query id="loc_tran_by_id">
+         <![CDATA[        
+            select * from location_transfer where location_transfer.ID = ?
+        ]]>
+	</query>
+	
+	<!-- Select all location Transaction  -->
+	<query id="all_location_Transactions">
+         <![CDATA[        
+            select * from location_transfer
+        ]]>
+	</query>
+	
+		<!-- Update a particular Location transaction request by id Query -->
+	<query id="update_location_Transactions_req">
+         <![CDATA[        
+            update location_transfer as lt 
+            set lt.CurrentLoc = ?, lt.customerId = ?, lt.GRNNo = ?, lt.DestinationLoc = ?, lt.Reason = ?
+            where lt.ID = ?
+            
+        ]]>
+	</query>
+	
+	<!-- Delete a particular Location transaction request by id Query -->
+	<query id="remove_location_Transactions_req">
+         <![CDATA[        
+            delete from location_transfer where location_transfer.ID = ?
+        ]]>
+	</query>
+	
+	
+	<!-- Update status, because admin confirm location transaction request  -->
+	<query id="update_status_admin_confirm">
+         <![CDATA[        
+            update location_transfer as lt 
+            set lt.Status = 1
+            where lt.ID = ?
+            
+        ]]>
+	</query>
+	
+	
+	<!-- Update status, because admin delete location transaction request  -->
+	<query id="update_status_admin_delete">
+         <![CDATA[        
+            update location_transfer as lt 
+            set lt.Status = 2
+            where lt.ID = ?
+            
+        ]]>
+	</query>
+	
+	<!-- Customer and TodoList -->
+	
+		<query id="search_todo_by_id">
+	         <![CDATA[  
+	               
+	          select * from list where TaskId=?;
+	          
+	        ]]>
+		</query>
+	
+		<query id="search_todo_by_status">
+	         <![CDATA[  
+	               
+	          select * from list where status LIKE ? ESCAPE '!';
+	          
+	        ]]>
+		</query>
+	
+		<query id="search_todo_by_priority">
+	         <![CDATA[  
+	               
+	          select * from list where Priority LIKE ? ESCAPE '!';
+	          
+	        ]]>
+		</query>
+	
+		<query id="search_customer_by_mobile">
+	         <![CDATA[  
+	               
+	          select * from customer where MobileNo LIKE ? ESCAPE '!';
+	          
+	        ]]>
+		</query>
+	
+		<query id="search_customer_by_email">
+	         <![CDATA[  
+	               
+	          select * from customer where Email LIKE ? ESCAPE '!';
+	          
+	        ]]>
+		</query>
+	
+		<query id="search_customer_by_type">
+	         <![CDATA[  
+	               
+	          select * from customer where type LIKE ? ESCAPE '!';
+	          
+	        ]]>
+		</query>
+	
+		<query id="search_customer_by_name">
+	         <![CDATA[  
+	               
+	          select * from customer where CustomerName LIKE ? ESCAPE '!';
+	          
+	        ]]>
+		</query>
+	
+		<query id="search_customer_by_id">
+	         <![CDATA[  
+	               
+	          select * from customer where CustomerId=?;
+	          
+	        ]]>
+		</query>
+	
+		<query id="check_customer_availability">
+	         <![CDATA[  
+	               
+	          select * from customer where CustomerId=?;
+	          
+	        ]]>
+		</query>
+	
+		<query id="check_todo_availability">
+	         <![CDATA[  
+	               
+	          select * from list where TaskId=?;
+	          
+	        ]]>
+		</query>
+	
+		<query id="add_customer_table">
+	         <![CDATA[        
+	            INSERT INTO  customer(CustomerName,type,Email,MobileNo,passwords,NicNumber)
+				VALUES (?,?,?,?,?,?);
+	        ]]>
+		</query>
+	
+	
+	
+		<query id="get_customer_table">
+	         <![CDATA[  
+	               
+	          select * from customer;
+	          
+	        ]]>
+		</query>
+	
+	
+		<query id="delete_customer_table">
+	         <![CDATA[  
+	               
+	          delete from customer where CustomerId=?;
+	          
+	        ]]>
+		</query>
+	
+	
+		<query id="update_customer_table">
+	         <![CDATA[  
+	          
+	          update customer as s
+	          set s.CustomerName = ?, s.type = ?,s.NicNumber = ?,s.Email = ?,s.MobileNo = ?
+	          where s.CustomerId = ?
+	          
+	        ]]>
+		</query>
+	
+		<query id="customer_by_id">
+	         <![CDATA[  
+	          
+	          select * from customer where customer.CustomerId = ?
+	          
+	        ]]>
+		</query>
+	
+	
+	
+		<query id="add_list_table">
+	         <![CDATA[        
+	            INSERT INTO list(TaskName,status,Priority,Comment)
+				VALUES (?,?,?,?);
+	        ]]>
+		</query>
+	
+	
+		<query id="get_todolist_table">
+	         <![CDATA[  
+	               
+	          select * from list;
+	          
+	        ]]>
+		</query>
+	
+	
+		<query id="delete_todolist_table">
+	         <![CDATA[  
+	               
+	          delete from list where TaskId=?;
+	          
+	        ]]>
+		</query>
+	
+	
+		<query id="update_todolist_table">
+	         <![CDATA[  
+	          
+	          update list as s
+	          set s.TaskName = ?, s.status = ?,s.Priority = ?,s.Comment = ?
+	          where s.TaskId = ?
+	          
+	        ]]>
+		</query>
+	
+	
+		<query id="list_by_id">
+	         <![CDATA[  
+	          
+	          select * from list where list.TaskId = ?	          
+	        ]]>
+		</query>
+		
+</Querys>
